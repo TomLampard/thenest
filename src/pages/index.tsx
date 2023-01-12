@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import CreatePost from "../components/posts/createPost";
+import CreatePost from "../components/forms/createPost";
 import Head from "next/head";
 
 const Home: NextPage = () => {
