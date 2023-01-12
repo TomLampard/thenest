@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import axios from "axios";
 import { S3 } from "aws-sdk";
 import { randomUUID } from "crypto";
 
@@ -10,7 +11,10 @@ const s3 = new S3({
   signatureVersion: "v4",
 });
 
-export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+export const imageUploadS3 = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => {
   const ex = (req.query.fileType as string).split("/")[1];
 
   const Key = `${randomUUID()}.${ex}`;
@@ -22,8 +26,10 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     ContentType: `file/${ex}`,
   };
 
-  const uploadUrl = s3.getSignedUrl("putObject", s3Params);
+  const uploadUrl = await s3.getSignedUrlPromise("putObject", s3Params);
 
+
+  await axios.put(uploadUrl, Key )
   console.log("UploadUrl", uploadUrl);
 
   res.status(200).json({

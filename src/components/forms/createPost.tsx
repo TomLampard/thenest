@@ -18,39 +18,6 @@ type PostFormProps = {
   onSubmit: SubmitHandler<FormData>;
 };
 
-
-export function uploadImageCommandHandler(
-  textareaEl: HTMLTextAreaElement,
-  files: File[]
-) {
-  const cursor = new Cursor(textareaEl)
-  const currentLineNumber = cursor.position.line
-
-  files.forEach(async (file, idx) => {
-    const placeholder = `![Uploading ${file.name}...]()`
-
-    cursor.replaceLine(currentLineNumber.lineNumber, placeholder)
-
-    try {
-      const uploadedImage = await uploadImage(file)
-
-      replacePlaceholder(
-        cursor,
-        placeholder,
-        `<img width="${
-          uploadedImage.dpi >= 144
-            ? Math.round(uploadedImage.width / 2)
-            : uploadedImage.width
-        }" alt="${uploadedImage.originalFilename}" src="${uploadedImage.url}">`
-      )
-    } catch (error: any) {
-      console.log(error)
-      replacePlaceholder(cursor, placeholder, '')
-      toast.error(`Error uploading image: ${error.message}`)
-    }
-  })
-}
-
 const PostForm = ({
   defaultValues,
   isSubmitting,
