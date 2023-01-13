@@ -50,7 +50,13 @@ export const Layout = ({ children }: LayoutProps) => {
             <SearchIcon className="h-4 w-4" />
           </IconButton>
           <Menu>
-            <MenuButton className="focus-ring group relative inline-flex rounded-full"></MenuButton>
+            <MenuButton className="focus-ring group relative inline-flex rounded-full">
+            <Avatar
+                name={session?.user?.name}
+                src={session?.user?.image}
+                size="sm"
+              />
+            </MenuButton>
             <MenuItems className="w-48">
               <MenuItemsContent>
                 <MenuItemLink href={`/profile/${session?.user?.id}`}>

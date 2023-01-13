@@ -21,7 +21,7 @@ const initialSize: Record<AvatarSize, string> = {
   lg: "w-16 h-16",
 };
 
-const isCharacterALetter = (char: string | null) => {
+const isCharacterALetter = (char: string | null | undefined) => {
   if (!char) return 
   return /[a-zA-Z]/.test(char);
 };
@@ -29,10 +29,7 @@ const isCharacterALetter = (char: string | null) => {
 
 export const Avatar = ({ size = "md", name, src }: AvatarProps) => {
   
-  if (!name) {
-    return Avatar;
-  }
-  const initial = name.charAt(0).toLocaleLowerCase();
+  const initial = name?.charAt(0).toLocaleLowerCase();
   return (
     <div className="relative inline-flex flex-shrink-0 rounded-full">
       {src ? (

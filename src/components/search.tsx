@@ -1,5 +1,5 @@
 import type { Key } from "react";
-import type { InferQueryPostOutput } from "../utils/api";
+import type { InferQueryOutput } from "../utils/api";
 import type { ItemOptions } from "use-item-list";
 import { SearchIcon, SpinnerIcon } from "../components/icons";
 import { classNames } from "../utils/classStringify";
@@ -27,26 +27,30 @@ const SearchResult = ({
     select: () => void;
     // eslint-disable-next-line @typescript-eslint/ban-types
     useHighlighted: () => Boolean;
-  };
-  result: InferQueryPostOutput["post"][number];
+  }
+  result: InferQueryOutput<"queries">
 }) => {
   const ref = useRef<HTMLLIElement>(null);
   const { id, highlight, select, useHighlighted } = useItem({
     ref,
     value: result,
   });
-  const highlighted = useHighlighted();
+  const highlighted = useHighlighted(); 
+  const [searchResult, setSearchResult] = useState("");
+
+  
+
 
   return (
     <li ref={ref} id={id} onMouseEnter={highlight} onClick={select}>
-      <Link href={`/post/${result.id}`}>
+      <Link href={`/post/${result}`}>
         <a
           className={classNames(
             "block py-3.5 pl-10 leading-tight transition-colors",
             highlighted && "bg-blue-600 text-white"
           )}
         >
-          {result.title}
+          {result}
         </a>
       </Link>
     </li>

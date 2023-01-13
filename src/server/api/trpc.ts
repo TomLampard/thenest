@@ -9,36 +9,35 @@ type CreateContextOptions = {
 };
 
 
-const createInnerTRPCContext = async (opts: CreateContextOptions) => {
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
   };
 };
 
-export const createTRPCContext = sync (opts: CreateNextContextOptions) => {
+export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
   // Get the session from the server using the unstable_getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
-  return await createInnerTRPCContext({
+  return createInnerTRPCContext({
     session,
   });
 };
 
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-
 const t = initTRPC
   .context<Awaited<ReturnType<typeof createTRPCContext>>>()
   .create({
     transformer: superjson,
     errorFormatter({ shape }) {
       return shape;
-    },
-  });
-
+    }
+  })
+  
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
  *
