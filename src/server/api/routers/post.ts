@@ -187,6 +187,51 @@ export const postRouter = createTRPCRouter({
       }
     }),
 
+  search: publicProcedure
+    .input(
+      z.object({
+        query: z.string().min(1),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const posts = await ctx.prisma.post.findMany({
+          take: 10,
+          where: {
+            hidden: false,
+            title: { search: input.query },
+            content: { search: input.query },
+          },
+          select: {
+            id: true,
+            title: true,
+            file: {
+              select: {
+                filename: true,
+              },
+            },
+            likedBy: {
+              orderBy: {
+                createdAt: "asc",
+              },
+              select: {
+                user: {
+                  select: {
+                    id: true,
+                    nickname: true,
+                    userAvatar: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+        return posts;
+      } catch {
+        new TRPCError({ code: "NOT_FOUND" });
+      }
+    }),
+
   findPostByAuthor: protectedProcedure
     .input(
       z.object({

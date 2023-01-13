@@ -1,5 +1,4 @@
 import { type NextPage } from "next";
-import CreatePost from "../components/forms/createPost";
 import Head from "next/head";
 
 const Home: NextPage = () => {
@@ -14,7 +13,6 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <CreatePost />
       </main>
     </>
   );

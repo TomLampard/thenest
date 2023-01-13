@@ -1,5 +1,6 @@
+import type { SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
-import { Controller, useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useLeaveConfirm } from "../../utils/useLeaveConfirm";
 import { Button } from "../buttons/button";
 import { ButtonLink } from "../buttons/buttonLink";
@@ -24,7 +25,7 @@ const PostForm = ({
   backTo,
   onSubmit,
 }: PostFormProps) => {
-  const { control, register, formState, getValues, reset, handleSubmit } =
+  const { register, formState, getValues, reset, handleSubmit } =
     useForm<FormData>({
       defaultValues,
     });
@@ -49,21 +50,33 @@ const PostForm = ({
         className="!py-1.5 text-lg font-semibold"
       />
       <div className="mt-6">
-        <Controller
-          name="content"
-          control={control}
-          rules={{ required: true }}
-          render={({ field }) => (
-            <Textarea
-              label="Content"
-              value={field.value}
-              onChange={field.onChange}
-              required
-            />
-          )}
+        <Textarea
+          {...register("content", { required: true })}
+          label="Content"
+          required
         />
       </div>
-
+      <div className="mt-8 flex items-center justify-between gap-4">
+        <div className="flex gap-4">
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            loadingChildren={`${
+              defaultValues ? "Saving Post" : "Sending to Nest"
+            }`}
+          >
+            {defaultValues?.title ? "Save" : "Post"}
+          </Button>
+          <ButtonLink href={backTo} variant="secondary">
+            Cancel
+          </ButtonLink>
+        </div>
+        {!isSubmitting && (
+          <p className="text-primary hover:text-blue-500">
+            Not submitting llllllllllll{" "}
+          </p>
+        )}
+      </div>
     </form>
   );
 };
