@@ -1,13 +1,13 @@
-export const useCapitalize = (string: string) => {
+export const capitalize = (string: string) => {
   if (!string) return string;
   return string[0]?.toUpperCase() + string.substring(1);
 };
 
-export const useIsCharLetter = (char: string) => {
+export const checkIsCharLetter = (char: string) => {
   return /[a-zA-Z]/.test(char);
 };
 
-export const useSummarize = (
+export const summarize = (
   html: string
 ): { summary: string; hasMore: boolean } => {
   const document = new DOMParser().parseFromString(html, "text/html");

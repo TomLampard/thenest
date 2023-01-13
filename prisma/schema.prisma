@@ -37,7 +37,6 @@ model Account {
     @@index([userId])
 }
 
-
 model Session {
     id           String   @id @default(cuid())
     sessionToken String   @unique
@@ -55,16 +54,13 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     bio           String?   @db.Text
-    avatar        File?     
-    userAvatar    String
+    image         String?
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
     comments      Comment[]
     likedPosts    Liked[]
-
-    @@unique([id, userAvatar])
-    @@index([userAvatar])
+    files         File[]
 }
 
 model VerificationToken {
@@ -91,7 +87,7 @@ model Post {
     id          String    @id @default(cuid())
     title       String    @db.VarChar(255)
     content     String    @db.Text
-    contentHtml String?    @db.Text
+    contentHtml String?   @db.Text
     hidden      Boolean   @default(false)
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt

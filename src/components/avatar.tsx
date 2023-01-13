@@ -5,7 +5,7 @@ type AvatarSize = "sm" | "md" | "lg";
 
 type AvatarProps = {
   size?: AvatarSize;
-  name: string;
+  name: string | null | undefined; 
   src?: string | null;
 };
 
@@ -21,12 +21,17 @@ const initialSize: Record<AvatarSize, string> = {
   lg: "w-16 h-16",
 };
 
-const isCharacterALetter = (char: string) => {
+const isCharacterALetter = (char: string | null) => {
+  if (!char) return 
   return /[a-zA-Z]/.test(char);
 };
 
 
 export const Avatar = ({ size = "md", name, src }: AvatarProps) => {
+  
+  if (!name) {
+    return Avatar;
+  }
   const initial = name.charAt(0).toLocaleLowerCase();
   return (
     <div className="relative inline-flex flex-shrink-0 rounded-full">
@@ -34,7 +39,8 @@ export const Avatar = ({ size = "md", name, src }: AvatarProps) => {
         <Fragment>
           <Image
             src={src}
-            alt={name}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            alt={name!}
             width={dimension[size]}
             height={dimension[size]}
             className="rounded-full object-cover"
@@ -46,8 +52,10 @@ export const Avatar = ({ size = "md", name, src }: AvatarProps) => {
           <div className="col-start-1 col-end-1 row-start-1 row-end-1 flex">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`/api/avatar?name=${encodeURIComponent(name)}`}
-              alt={name}
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              src={`/api/avatar?name=${encodeURIComponent(name!)}`}
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              alt={name!}
               width={dimension[size]}
               height={dimension[size]}
             />

@@ -37,12 +37,11 @@ CREATE TABLE `User` (
     `nickname` VARCHAR(191) NULL,
     `email` VARCHAR(191) NULL,
     `emailVerified` DATETIME(3) NULL,
-    `userAvatar` VARCHAR(191) NOT NULL,
+    `bio` TEXT NULL,
+    `image` VARCHAR(191) NULL,
 
     UNIQUE INDEX `User_nickname_key`(`nickname`),
     UNIQUE INDEX `User_email_key`(`email`),
-    INDEX `User_userAvatar_idx`(`userAvatar`),
-    UNIQUE INDEX `User_id_userAvatar_key`(`id`, `userAvatar`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -66,45 +65,58 @@ CREATE TABLE `File` (
     `postId` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `File_filename_key`(`filename`),
+    UNIQUE INDEX `File_userId_key`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `Post` (
     `id` VARCHAR(191) NOT NULL,
-    `text` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `content` TEXT NOT NULL,
+    `contentHtml` TEXT NULL,
+    `hidden` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
+    `authorId` VARCHAR(191) NOT NULL,
     `fileId` VARCHAR(191) NOT NULL,
 
-    INDEX `Post_userId_idx`(`userId`),
+    UNIQUE INDEX `Post_fileId_key`(`fileId`),
     INDEX `Post_fileId_idx`(`fileId`),
+    INDEX `Post_authorId_idx`(`authorId`),
+    FULLTEXT INDEX `Post_title_content_idx`(`title`, `content`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Liked` (
+    `id` VARCHAR(191) NOT NULL,
+    `postId` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `commentId` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    INDEX `Liked_postId_idx`(`postId`),
+    INDEX `Liked_userId_idx`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `Comment` (
-    `id` VARCHAR(191) NOT NULL,
-    `text` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
-    `postId` VARCHAR(191) NOT NULL,
-    `fileId` VARCHAR(191) NULL,
-
-    INDEX `Comment_postId_idx`(`postId`),
-    INDEX `Comment_userId_idx`(`userId`),
-    INDEX `Comment_fileId_idx`(`fileId`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `Like` (
-    `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
-    `userAvatar` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `content` TEXT NOT NULL,
+    `contentHtml` TEXT NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `postId` VARCHAR(191) NOT NULL,
+    `authorId` VARCHAR(191) NOT NULL,
+    `fileId` VARCHAR(191) NULL,
+    `likeId` VARCHAR(191) NOT NULL,
 
-    INDEX `Like_userId_userAvatar_idx`(`userId`, `userAvatar`),
+    UNIQUE INDEX `Comment_likeId_key`(`likeId`),
+    INDEX `Comment_authorId_idx`(`authorId`),
+    INDEX `Comment_postId_idx`(`postId`),
+    INDEX `Comment_fileId_idx`(`fileId`),
+    INDEX `Comment_likeId_idx`(`likeId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

@@ -34,12 +34,9 @@ export const userRouter = createTRPCRouter({
           where: { id },
           select: {
             id: true,
+            name: true,
             nickname: true,
-            avatar: {
-              select: {
-                filename: true,
-              },
-            },
+            image: true,
             bio: true,
             posts: true,
             comments: true,
@@ -96,10 +93,10 @@ export const userRouter = createTRPCRouter({
     })
   ).mutation(async ({ ctx, input }) => {
     try {
-      const user = await ctx.prisma.file.update({
+      const user = await ctx.prisma.user.update({
         where: { id: ctx.session.user.id},
         data: {
-          filename: input.filename,
+          image: input.filename,
         }
       })
       return user;
