@@ -3,6 +3,7 @@ import { Avatar } from "./avatar";
 import { ButtonLink } from "./buttons/buttonLink";
 import { Footer } from "./footer";
 import { IconButton } from "../components/buttons/iconButton";
+import { Search } from "../components/search";
 import { Logo, SearchIcon } from "../components/icons";
 import {
   Menu,
@@ -12,7 +13,6 @@ import {
   MenuItems,
   MenuItemsContent,
 } from "./menu";
-import { Search } from "../components/search";
 import { capitalize } from "../utils/text";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -99,7 +99,6 @@ export const Layout = ({ children }: LayoutProps) => {
       <div className="py-20">
         <Footer />
       </div>
-
       <Search
         isOpen={isSearchOpen}
         onClose={() => {

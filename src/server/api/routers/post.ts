@@ -1,52 +1,33 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { Prisma } from "@prisma/client";
+
+const defaultPostSelect = Prisma.validator<Prisma.PostSelect>()({
+  id: true,
+  title: true,
+  content: true,
+  authorId: true,
+  fileId: true,
+  createdAt: true,
+  updatedAt: true,
+  comments: true,
+  likedBy: true,
+});
 
 export const postRouter = createTRPCRouter({
   getAllPosts: publicProcedure.query(async ({ ctx }) => {
     try {
       const posts = await ctx.prisma.post.findMany({
-        select: {
-          id: true,
-          title: true,
-          author: {
-            select: {
-              id: true,
-              nickname: true,
-              userAvatar: true,
-            },
-          },
-          content: true,
-          contentHtml: true,
-          createdAt: true,
-          updatedAt: true,
-          file: {
-            select: {
-              filename: true,
-            },
-          },
-          comments: true,
-          likedBy: {
-            orderBy: {
-              createdAt: "asc",
-            },
-            select: {
-              user: {
-                select: {
-                  id: true,
-                  nickname: true,
-                  userAvatar: true,
-                },
-              },
-            },
-          },
-        },
+        select: defaultPostSelect,
 
         orderBy: {
           createdAt: "desc",
         },
       });
-      return posts;
+      return {
+        posts,
+      };
     } catch {
       new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
     }
@@ -68,49 +49,7 @@ export const postRouter = createTRPCRouter({
       };
       try {
         const posts = await ctx.prisma.post.findMany({
-          select: {
-            id: true,
-            title: true,
-            content: true,
-            contentHtml: true,
-            file: {
-              select: {
-                filename: true,
-              },
-            },
-            createdAt: true,
-            updatedAt: true,
-            hidden: true,
-            author: {
-              select: {
-                id: true,
-                nickname: true,
-                userAvatar: true,
-              },
-            },
-            comments: {
-              select: {},
-            },
-            likedBy: {
-              orderBy: {
-                createdAt: "asc",
-              },
-              select: {
-                user: {
-                  select: {
-                    id: true,
-                    nickname: true,
-                    userAvatar: true,
-                  },
-                },
-              },
-            },
-            _count: {
-              select: {
-                comments: true,
-              },
-            },
-          },
+          select: defaultPostSelect,
           take,
           skip,
           orderBy: {
@@ -141,47 +80,13 @@ export const postRouter = createTRPCRouter({
           where: {
             id: input.id,
           },
-          select: {
-            id: true,
-            title: true,
-            author: {
-              select: {
-                id: true,
-                nickname: true,
-                userAvatar: true,
-              },
-            },
-            content: true,
-            contentHtml: true,
-            createdAt: true,
-            updatedAt: true,
-            file: {
-              select: {
-                filename: true,
-              },
-            },
-            comments: {
-              orderBy: {
-                createdAt: "asc",
-              },
-            },
-            likedBy: {
-              orderBy: {
-                createdAt: "asc",
-              },
-              select: {
-                user: {
-                  select: {
-                    id: true,
-                    nickname: true,
-                    userAvatar: true,
-                  },
-                },
-              },
-            },
-          },
+          select: defaultPostSelect,
         });
-        return post;
+        return {
+          title: post?.title,
+          id: post?.id,
+          content: post?.content,
+        };
       } catch {
         new TRPCError({ code: "NOT_FOUND" });
       }
@@ -202,31 +107,9 @@ export const postRouter = createTRPCRouter({
             title: { search: input.query },
             content: { search: input.query },
           },
-          select: {
-            id: true,
-            title: true,
-            file: {
-              select: {
-                filename: true,
-              },
-            },
-            likedBy: {
-              orderBy: {
-                createdAt: "asc",
-              },
-              select: {
-                user: {
-                  select: {
-                    id: true,
-                    nickname: true,
-                    userAvatar: true,
-                  },
-                },
-              },
-            },
-          },
+          select: defaultPostSelect,
         });
-        return posts;
+        return [...posts];
       } catch {
         new TRPCError({ code: "NOT_FOUND" });
       }
@@ -244,37 +127,7 @@ export const postRouter = createTRPCRouter({
           where: {
             authorId: input.authorId,
           },
-          select: {
-            id: true,
-            title: true,
-            author: {
-              select: {
-                id: true,
-                nickname: true,
-                userAvatar: true,
-              },
-            },
-            content: true,
-            contentHtml: true,
-            createdAt: true,
-            updatedAt: true,
-            file: true,
-            comments: true,
-            likedBy: {
-              orderBy: {
-                createdAt: "asc",
-              },
-              select: {
-                user: {
-                  select: {
-                    id: true,
-                    nickname: true,
-                    userAvatar: true,
-                  },
-                },
-              },
-            },
-          },
+          select: defaultPostSelect,
         });
         return posts;
       } catch {
@@ -291,37 +144,7 @@ export const postRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const posts = await ctx.prisma.post.findMany({
-          select: {
-            id: true,
-            title: true,
-            author: {
-              select: {
-                id: true,
-                nickname: true,
-                userAvatar: true,
-              },
-            },
-            content: true,
-            contentHtml: true,
-            createdAt: true,
-            updatedAt: true,
-            file: true,
-            comments: true,
-            likedBy: {
-              orderBy: {
-                createdAt: "asc",
-              },
-              select: {
-                user: {
-                  select: {
-                    id: true,
-                    nickname: true,
-                    userAvatar: true,
-                  },
-                },
-              },
-            },
-          },
+          select: defaultPostSelect,
           where: {
             authorId: input.userId,
           },

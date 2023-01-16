@@ -1,5 +1,4 @@
-import type { Key } from "react";
-import type { InferQueryOutput } from "../utils/api";
+import type { PostSearchRouterOutput } from "../utils/api";
 import type { ItemOptions } from "use-item-list";
 import { SearchIcon, SpinnerIcon } from "../components/icons";
 import { classNames } from "../utils/classStringify";
@@ -16,46 +15,43 @@ type SearchProps = {
   onClose: () => void;
 };
 
-const SearchResult = ({
-  useItem,
-  result,
-}: {
-  useItem: ({ ref, text, value, disabled }: ItemOptions) => {
-    id: string;
-    index: number;
-    highlight: () => void;
-    select: () => void;
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    useHighlighted: () => Boolean;
-  }
-  result: InferQueryOutput<"queries">
-}) => {
-  const ref = useRef<HTMLLIElement>(null);
-  const { id, highlight, select, useHighlighted } = useItem({
-    ref,
-    value: result,
-  });
-  const highlighted = useHighlighted(); 
-  const [searchResult, setSearchResult] = useState("");
+// function SearchResult({
+//   useItem,
+//   result,
+// }: {
+//   useItem: ({ ref, text, value, disabled }: ItemOptions) => {
+//     id: string;
+//     index: number;
+//     highlight: () => void;
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     selected: any;
+//     select: () => void;
+//     // eslint-disable-next-line @typescript-eslint/ban-types
+//     useHighlighted: () => Boolean;
+//   };
+//   result: PostSearchRouterOutput;
+// }) {
+//   const ref = useRef<HTMLLIElement>(null);
+//   const { id, highlight, select, useHighlighted } = useItem({
+//     ref,
+//     value: result,
+//   });
+//   const highlighted = useHighlighted();
 
-  
+//   return (
+//     <li ref={ref} id={id} onMouseEnter={highlight} onClick={select}>
+//       <Link href={`/post/$`}>
+//         <a
+//           className={classNames(
+//             "block py-3.5 pl-10 pr-3 leading-tight transition-colors",
+//             highlighted && "bg-blue-600 text-white"
+//           )}
+//         ></a>
+//       </Link>
+//     </li>
+//   );
+// }
 
-
-  return (
-    <li ref={ref} id={id} onMouseEnter={highlight} onClick={select}>
-      <Link href={`/post/${result}`}>
-        <a
-          className={classNames(
-            "block py-3.5 pl-10 leading-tight transition-colors",
-            highlighted && "bg-blue-600 text-white"
-          )}
-        >
-          {result}
-        </a>
-      </Link>
-    </li>
-  );
-};
 
 const SearchField = ({ onSelect }: { onSelect: () => void }) => {
   const [value, setValue] = useState("");
@@ -63,15 +59,11 @@ const SearchField = ({ onSelect }: { onSelect: () => void }) => {
   const router = useRouter();
 
   const feedQuery = api.post.search.useQuery(
-      {
-        query: debouncedValue,
-      },
-    {
-      enabled: debouncedValue?.trim().length > 0,
-    }
+    { query: debouncedValue },
+    { enabled: debouncedValue.trim().length > 0 }
   );
 
-  const { moveHighlightedItem, selectHighlightedItem, useItem } = useItemList({
+  const { moveHighlightedItem, selectHighlightedItem, } = useItemList({
     onSelect: (item) => {
       router.push(`/post/${item.value.id}`);
       onSelect();
@@ -142,15 +134,30 @@ const SearchField = ({ onSelect }: { onSelect: () => void }) => {
         />
       </div>
       {feedQuery.data &&
-        (feedQuery.data.length > 0 ? (
+        (feedQuery.data?.length > 0 ? (
           <ul
             id="search-results"
             role="listbox"
             className="max-h-[286px] overflow-y-auto border-t"
           >
-            {feedQuery.data.map((result: { id: Key | null | undefined }) => (
-              <SearchResult key={result.id} useItem={useItem} result={result} />
-            ))}
+            {feedQuery.data.map(
+              (result: {
+                id: string | null | undefined;
+                title: string | null | undefined;
+              }) => (
+                <li key={result.id}>
+                  <Link href={`/post/${result?.id}`}>
+                    <a
+                      className={classNames(
+                        "block py-3.5 pl-10 pr-3 leading-tight transition-colors"
+                      )}
+                    >
+                      {result?.title}
+                    </a>
+                  </Link>
+                </li>
+              )
+            )}
           </ul>
         ) : (
           <div className="border-t py-3.5 px-3 text-center leading-tight">
@@ -191,7 +198,7 @@ export const Search = ({ isOpen, onClose }: SearchProps) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <div className="bg-primary mt-[10vh] mb-8 inline-block w-full max-w-md transform overflow-hidden rounded-lg text-left align-middle shadow-xl transition-all dark:border">
+            <div className="mt-[10vh] mb-8 inline-block w-full max-w-md transform overflow-hidden rounded-lg bg-primary text-left align-middle shadow-xl transition-all dark:border">
               {isOpen ? (
                 <SearchField onSelect={onClose} />
               ) : (

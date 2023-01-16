@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -136,20 +137,20 @@
 
 @layer base {
   @font-face {
-    font-family: "Inter var";
+    font-family: "Sofia Sans";
     font-style: normal;
     font-weight: 100 900;
     font-display: swap;
-    src: url("/fonts/inter-roman.var.woff2") format("woff2");
+    src: url("https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap");
     font-named-instance: "Regular";
   }
 
   @font-face {
-    font-family: "Inter var";
+    font-family: "Sofia Sans";
     font-style: italic;
     font-weight: 100 900;
     font-display: swap;
-    src: url("/fonts/inter-italic.var.woff2") format("woff2");
+    src: url("https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
     font-named-instance: "Italic";
   }
 
