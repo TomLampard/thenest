@@ -19,12 +19,12 @@ type LikeProps = {
   onUnlike: () => void;
 };
 
-export function LikeButton({
+export const LikeButton = ({
   likedBy,
   responsive,
   onLike,
   onUnlike,
-}: LikeProps) {
+}: LikeProps) => {
   const [isLiking, setIsLiking] = useState(false)
 
   function handleClick() {

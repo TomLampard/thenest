@@ -45,3 +45,4 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
 
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
 export type PostSearchRouterOutput = RouterOutputs["post"]["search"];
+export type PostFeedRouterOutput = RouterOutputs["post"]["feedPosts"];

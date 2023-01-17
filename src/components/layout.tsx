@@ -28,17 +28,11 @@ export const Layout = ({ children }: LayoutProps) => {
   const { theme, themes, setTheme } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  if (!session) {
-    return <div></div>;
-  }
-
   return (
     <div className="mx-auto max-w-3xl px-6">
       <header className="flex items-center justify-between gap-4 py-12 md:py-20">
         <Link href="/">
-          <a>
             <Logo className="text-red-light h-[34px] w-auto" />
-          </a>
         </Link>
         <div className="flex items-center gap-2 md:gap-4">
           <IconButton

@@ -9,7 +9,7 @@ export const checkIsCharLetter = (char: string) => {
 
 export const summarize = (
   html: string
-): { summary: string; hasMore: boolean } => {
+): { summary: string | undefined; hasMore: boolean } => {
   const document = new DOMParser().parseFromString(html, "text/html");
 
   const allowedTags = ["p", "ul", "ol", "h3", "pre", "img"];

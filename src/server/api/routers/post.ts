@@ -1,57 +1,88 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { CreatePostSchema } from "../../../schema/postSchema";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 const defaultPostSelect = Prisma.validator<Prisma.PostSelect>()({
   id: true,
   title: true,
   content: true,
+  author: {
+    select: {
+      id: true,
+      nickname: true,
+      image: true,
+    },
+  },
   authorId: true,
+  file: {
+    select: {
+      id: true,
+      filename: true,
+    },
+  },
   fileId: true,
+  hidden: true,
   createdAt: true,
   updatedAt: true,
-  comments: true,
-  likedBy: true,
+  comments: {
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      author: {
+        select: {
+          id: true,
+          nickname: true,
+          image: true,
+        },
+      },
+    },
+  },
+  likedBy: {
+    select: {
+      id: true,
+    },
+  },
 });
 
 export const postRouter = createTRPCRouter({
+  list: publicProcedure.query(async ({ ctx }) => {
+    const posts = await ctx.prisma.post.findMany({
+      select: defaultPostSelect,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return posts;
+  }),
+
   getAllPosts: publicProcedure.query(async ({ ctx }) => {
     try {
-      const posts = await ctx.prisma.post.findMany({
+      const posts = ctx.prisma.post.findMany({
         select: defaultPostSelect,
 
         orderBy: {
           createdAt: "desc",
         },
       });
-      return {
-        posts,
-      };
+      return posts;
     } catch {
       new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
     }
   }),
 
   feedPosts: protectedProcedure
-    .input(
-      z.object({
-        take: z.number().min(1).max(50).optional(),
-        skip: z.number().min(1).optional(),
-        authorId: z.string().optional(),
-      })
-    )
+    .input(CreatePostSchema)
     .query(async ({ ctx, input }) => {
-      const take = input?.take ?? 50;
-      const skip = input?.skip;
       const where = {
-        authorId: input?.authorId,
+        authorId: input?.author,
       };
       try {
         const posts = await ctx.prisma.post.findMany({
           select: defaultPostSelect,
-          take,
-          skip,
           orderBy: {
             createdAt: "desc",
           },
@@ -86,6 +117,7 @@ export const postRouter = createTRPCRouter({
           title: post?.title,
           id: post?.id,
           content: post?.content,
+          file: post?.file?.filename,
         };
       } catch {
         new TRPCError({ code: "NOT_FOUND" });
@@ -109,7 +141,9 @@ export const postRouter = createTRPCRouter({
           },
           select: defaultPostSelect,
         });
-        return [...posts];
+        return {
+          posts,
+        };
       } catch {
         new TRPCError({ code: "NOT_FOUND" });
       }
@@ -155,44 +189,20 @@ export const postRouter = createTRPCRouter({
       }
     }),
 
-  createPost: protectedProcedure
-    .input(
-      z.object({
-        description: z
-          .string({
-            required_error: "Post description text is required",
-          })
-          .min(4)
-          .max(1100),
-        filename: z.string({
-          required_error: "file Id for post file is requied",
-        }),
-        title: z
-          .string({
-            required_error: "Post title text is required",
-          })
-          .min(2)
-          .max(254),
-      })
-    )
+  createPost: publicProcedure
+    .input(CreatePostSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
+      const postId = randomUUID();
 
       try {
         const post = await ctx.prisma.post.create({
           data: {
+            id: postId,
             title: input.title,
-            file: {
-              connect: {
-                id: input.filename,
-              },
-            },
-            content: input.description,
-            author: {
-              connect: {
-                id: userId,
-              },
-            },
+            content: input.content,
+            authorId: userId,
+            fileId: input.file,
           },
         });
         return post;

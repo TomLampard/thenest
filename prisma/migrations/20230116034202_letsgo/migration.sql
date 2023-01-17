@@ -81,6 +81,7 @@ CREATE TABLE `Post` (
     `authorId` VARCHAR(191) NOT NULL,
     `fileId` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `Post_authorId_key`(`authorId`),
     UNIQUE INDEX `Post_fileId_key`(`fileId`),
     INDEX `Post_fileId_idx`(`fileId`),
     INDEX `Post_authorId_idx`(`authorId`),

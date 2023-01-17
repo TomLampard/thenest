@@ -1,7 +1,12 @@
-import { type NextPage } from "next";
 import Head from "next/head";
+import Posts from "../components/randomTest";
+import { Layout } from "../components/layout";
+import type { NextPageWithAuthLayout } from "src/utils/types";
+import { useSession } from "next-auth/react";
 
-const Home: NextPage = () => {
+const Home: NextPageWithAuthLayout = () => {
+  const { data: sessionData } = useSession();
+
   return (
     <>
       <Head>
@@ -13,9 +18,19 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <div className="flex flex-col items-center justify-center gap-4"></div>
+
+        <Posts />
       </main>
     </>
   );
 };
 
-export default Home;
+Home.auth = true
+
+Home.getLayout = function getLayout(page: React.ReactElement) {
+  return <Layout>{page}</Layout>
+}
+
+export default Home
+
