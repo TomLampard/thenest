@@ -73,31 +73,34 @@ model VerificationToken {
 
 model File {
     id        String    @id @default(cuid())
-    filename  String    @unique
+    filename  String    @db.Text()
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
-    user      User      @relation(fields: [userId], references: [id])
-    userId    String    @unique
-    post      Post?
-    postId    String
-    comment   Comment[]
+    author    User      @relation(fields: [authorId], references: [id])
+    authorId  String    
+    comment   Comment?
+    file      Post?
+
+    @@unique([id])
+    @@index([authorId])
 }
 
 model Post {
     id          String    @id @default(cuid())
-    title       String    @db.VarChar(255)
-    content     String    @db.Text
-    contentHtml String?   @db.Text
+    title       String    @db.Text()
+    content     String    @db.Text()
+    contentHtml String?   @db.Text()
     hidden      Boolean   @default(false)
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
     author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-    authorId    String    @unique  
+    authorId    String  
     likedBy     Liked[]
     comments    Comment[]
     file        File?     @relation(fields: [fileId], references: [id])
     fileId      String    @unique
 
+    @@unique([id])
     @@index([fileId])
     @@index([authorId])
     @@fulltext([title, content])
@@ -120,15 +123,15 @@ model Liked {
 
 model Comment {
     id          Int      @id @default(autoincrement())
-    content     String   @db.Text
-    contentHtml String   @db.Text
+    content     String   @db.Text()
+    contentHtml String   @db.Text()
     createdAt   DateTime @default(now())
     post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
     postId      String
     author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId    String
     File        File?    @relation(fields: [fileId], references: [id])
-    fileId      String?
+    fileId      String?  @unique
     like        Liked?   @relation(fields: [likeId], references: [id])
     likeId      String   @unique
 

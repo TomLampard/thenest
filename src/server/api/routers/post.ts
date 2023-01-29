@@ -16,14 +16,12 @@ const defaultPostSelect = Prisma.validator<Prisma.PostSelect>()({
       image: true,
     },
   },
-  authorId: true,
   file: {
     select: {
       id: true,
       filename: true,
     },
   },
-  fileId: true,
   hidden: true,
   createdAt: true,
   updatedAt: true,
@@ -43,12 +41,64 @@ const defaultPostSelect = Prisma.validator<Prisma.PostSelect>()({
   },
   likedBy: {
     select: {
-      id: true,
+      author: {
+        select: {
+          id: true,
+          nickname: true,
+          image: true,
+        },
+      },
     },
   },
 });
 
 export const postRouter = createTRPCRouter({
+  createPost: protectedProcedure
+    .input(CreatePostSchema)
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+      const postId = randomUUID();
+      const fileId = randomUUID();
+
+      const file = ctx.prisma.file.create({
+        data: {
+          id: fileId,
+          filename: input.filename,
+          author: {
+            connect: {
+              id: userId,
+            },
+          },
+        },
+        select: {
+          filename: true,
+          id: true,
+          author: true,
+        },
+      });
+
+      const post = ctx.prisma.post.create({
+        data: {
+          id: postId,
+          title: input.title,
+          content: input.content,
+          author: {
+            connect: {
+              id: userId,
+            },
+          },
+          file: {
+            connect: {
+              id: fileId,
+            },
+          },
+        },
+        select: defaultPostSelect,
+      });
+
+      return ctx.prisma.$transaction([post, file]);
+    }),
+
   list: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
       select: defaultPostSelect,
@@ -75,10 +125,15 @@ export const postRouter = createTRPCRouter({
   }),
 
   feedPosts: protectedProcedure
-    .input(CreatePostSchema)
+    .input(
+      z.object({
+        cursor: z.string().optional(),
+        id: z.string(),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const where = {
-        authorId: input?.author,
+        authorId: input.id,
       };
       try {
         const posts = await ctx.prisma.post.findMany({
@@ -189,28 +244,6 @@ export const postRouter = createTRPCRouter({
       }
     }),
 
-  createPost: publicProcedure
-    .input(CreatePostSchema)
-    .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id;
-      const postId = randomUUID();
-
-      try {
-        const post = await ctx.prisma.post.create({
-          data: {
-            id: postId,
-            title: input.title,
-            content: input.content,
-            authorId: userId,
-            fileId: input.file,
-          },
-        });
-        return post;
-      } catch {
-        new TRPCError({ code: "BAD_REQUEST" });
-      }
-    }),
-
   editPost: protectedProcedure
     .input(
       z.object({
@@ -258,11 +291,6 @@ export const postRouter = createTRPCRouter({
           data: {
             title: data.title,
             content: data.content,
-            file: {
-              connect: {
-                filename: data.file,
-              },
-            },
           },
         });
 

@@ -1,7 +1,7 @@
 import type { ButtonVariant } from "./button";
 import type { ComponentPropsWithoutRef } from "react";
 import type { LinkProps } from "next/link";
-import { buttonClasses } from "./button";
+import { Button } from "./button";
 import Link from "next/link";
 import { forwardRef } from "react";
 
@@ -25,27 +25,23 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
       className,
       variant = "primary",
       responsive,
-      ...rest
     },
     forwardedRef
   ) => {
     return (
-      <Link
-        href={href}
-        as={as}
-        replace={replace}
-        scroll={scroll}
-        shallow={shallow}
-        passHref={passHref}
-        prefetch={prefetch}
-        locale={locale}
-      >
-        <a
-          {...rest}
+      <Button variant={variant} responsive={responsive} className={className}>
+        <Link
+          href={href}
+          as={as}
+          replace={replace}
+          scroll={scroll}
+          shallow={shallow}
+          passHref={passHref}
+          prefetch={prefetch}
+          locale={locale}
           ref={forwardedRef}
-          className={buttonClasses({ className, variant, responsive })}
-        />
-      </Link>
+        ></Link>
+      </Button>
     );
   }
 );

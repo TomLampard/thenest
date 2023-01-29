@@ -1,11 +1,8 @@
 import Head from "next/head";
-import Posts from "../components/randomTest";
 import { Layout } from "../components/layout";
 import type { NextPageWithAuthLayout } from "src/utils/types";
-import { useSession } from "next-auth/react";
 
 const Home: NextPageWithAuthLayout = () => {
-  const { data: sessionData } = useSession();
 
   return (
     <>
@@ -18,19 +15,20 @@ const Home: NextPageWithAuthLayout = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="flex flex-col items-center justify-center gap-4"></div>
-
-        <Posts />
+        <div className="flex flex-col items-center justify-center gap-4">
+          <h2 className="justify-center gap-4 text-2xl font-semibold">
+            Welcome to The Nest...
+          </h2>
+        </div>
       </main>
     </>
   );
 };
 
-Home.auth = true
+Home.auth = true;
 
 Home.getLayout = function getLayout(page: React.ReactElement) {
-  return <Layout>{page}</Layout>
-}
+  return <Layout>{page}</Layout>;
+};
 
-export default Home
-
+export default Home;

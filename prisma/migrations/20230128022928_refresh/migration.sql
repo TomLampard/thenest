@@ -58,21 +58,21 @@ CREATE TABLE `VerificationToken` (
 -- CreateTable
 CREATE TABLE `File` (
     `id` VARCHAR(191) NOT NULL,
-    `filename` VARCHAR(191) NOT NULL,
+    `filename` TEXT NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
+    `authorId` VARCHAR(191) NOT NULL,
     `postId` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `File_filename_key`(`filename`),
-    UNIQUE INDEX `File_userId_key`(`userId`),
+    UNIQUE INDEX `File_authorId_key`(`authorId`),
+    UNIQUE INDEX `File_authorId_postId_id_key`(`authorId`, `postId`, `id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `Post` (
     `id` VARCHAR(191) NOT NULL,
-    `title` VARCHAR(255) NOT NULL,
+    `title` TEXT NOT NULL,
     `content` TEXT NOT NULL,
     `contentHtml` TEXT NULL,
     `hidden` BOOLEAN NOT NULL DEFAULT false,
@@ -85,6 +85,7 @@ CREATE TABLE `Post` (
     UNIQUE INDEX `Post_fileId_key`(`fileId`),
     INDEX `Post_fileId_idx`(`fileId`),
     INDEX `Post_authorId_idx`(`authorId`),
+    UNIQUE INDEX `Post_authorId_fileId_id_key`(`authorId`, `fileId`, `id`),
     FULLTEXT INDEX `Post_title_content_idx`(`title`, `content`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -93,13 +94,13 @@ CREATE TABLE `Post` (
 CREATE TABLE `Liked` (
     `id` VARCHAR(191) NOT NULL,
     `postId` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
+    `authorId` VARCHAR(191) NOT NULL,
     `commentId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
     INDEX `Liked_postId_idx`(`postId`),
-    INDEX `Liked_userId_idx`(`userId`),
+    INDEX `Liked_authorId_idx`(`authorId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -114,6 +115,7 @@ CREATE TABLE `Comment` (
     `fileId` VARCHAR(191) NULL,
     `likeId` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `Comment_fileId_key`(`fileId`),
     UNIQUE INDEX `Comment_likeId_key`(`likeId`),
     INDEX `Comment_authorId_idx`(`authorId`),
     INDEX `Comment_postId_idx`(`postId`),

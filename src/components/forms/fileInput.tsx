@@ -4,16 +4,16 @@ import { forwardRef } from "react";
 
 
 
-export type TextFieldOwnProps = {
+export type FileInputFieldOwnProps = {
   label?: string
 }
 
-type TextFieldProps = TextFieldOwnProps & 
+type FileInputFieldProps = FileInputFieldOwnProps & 
  ComponentPropsWithoutRef<"input">
 
 
-export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ label, id, name, type = 'text', className, ...rest }, forwardedRef) => {
+export const FileInputField = forwardRef<HTMLInputElement, FileInputFieldProps>(
+  ({ label, id, name, type = 'file', className, ...rest }, forwardedRef) => {
     return (
       <div>
         {label && (
@@ -24,7 +24,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         <input
           {...rest}
           ref={forwardedRef}
-          id={id || name}
+          id={id}
           name={name}
           type={type}
           className={classNames(
@@ -37,4 +37,4 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   }
 )
 
-TextField.displayName = "TextField"
+FileInputField.displayName = "FileInputField"

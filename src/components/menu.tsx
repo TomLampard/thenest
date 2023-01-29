@@ -48,18 +48,6 @@ export const MenuItemsContent = ({ children }: { children: ReactNode }) => {
   return <div className="py-2">{children}</div>;
 };
 
-const NextLink = ({
-  href,
-  children,
-  ...rest
-}: Omit<ComponentPropsWithoutRef<"a">, "href"> & LinkProps) => {
-  return (
-    <Link href={href}>
-      <a {...rest}>{children}</a>
-    </Link>
-  );
-};
-
 const menuItemClasses = ({
   active,
   className,
@@ -86,12 +74,12 @@ export const MenuItemLink = ({
   return (
     <HeadlessMenu.Item>
       {({ active }) => (
-        <NextLink
+        <Link
           href={href}
           className={menuItemClasses({ active, className })}
         >
           {children}
-        </NextLink>
+        </Link>
       )}
     </HeadlessMenu.Item>
   );

@@ -1,15 +1,17 @@
 import type { SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useLeaveConfirm } from "../../utils/useLeaveConfirm";
+import { useLeaveConfirm } from "../../utils/hooks/useLeaveConfirm";
 import { Button } from "../buttons/button";
 import { ButtonLink } from "../buttons/buttonLink";
 import { TextField } from "./textField";
 import { Textarea } from "./textarea";
+import { FileInputField } from "./fileInput";
 
 type FormData = {
   title: string;
   content: string;
+  filename: string;
 };
 
 type PostFormProps = {
@@ -19,7 +21,7 @@ type PostFormProps = {
   onSubmit: SubmitHandler<FormData>;
 };
 
-const PostForm = ({
+export const CreatePostForm = ({
   defaultValues,
   isSubmitting,
   backTo,
@@ -42,6 +44,17 @@ const PostForm = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <div>      
+        <FileInputField 
+          {...register("filename", { required: true })}
+          label="File"
+          name="file"
+          autoFocus
+          required
+          className="!py-1.5 text-lg font-semibold"
+        />
+      </div>
+      <div>
       <TextField
         {...register("title", { required: true })}
         label="Title"
@@ -49,6 +62,7 @@ const PostForm = ({
         required
         className="!py-1.5 text-lg font-semibold"
       />
+      </div>
       <div className="mt-6">
         <Textarea
           {...register("content", { required: true })}
@@ -81,4 +95,3 @@ const PostForm = ({
   );
 };
 
-export default PostForm;

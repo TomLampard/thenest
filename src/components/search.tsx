@@ -147,13 +147,13 @@ const SearchField = ({ onSelect }: { onSelect: () => void }) => {
               }) => (
                 <li key={result.id}>
                   <Link href={`/post/${result?.id}`}>
-                    <a
+                    <div
                       className={classNames(
                         "block py-3.5 pl-10 pr-3 leading-tight transition-colors"
                       )}
                     >
                       {result?.title}
-                    </a>
+                    </div>
                   </Link>
                 </li>
               )
